@@ -14,15 +14,6 @@ Library
   Exposed-Modules:      HaskellWorkshop.Beginning
   Other-Modules:        HaskellWorkshop.Beginning.Internal
   Build-Depends:        base >= 4 && < 5
-
-Test-Suite spec
-  Type:                 exitcode-stdio-1.0
-  Default-Language:     Haskell2010
-  Hs-Source-Dirs:       test
-  Ghc-Options:          -Wall
-  Main-Is:              Spec.hs
-  Build-Depends:        base
-                      , haskell-workshop
                       , hspec
 
 Source-Repository head
