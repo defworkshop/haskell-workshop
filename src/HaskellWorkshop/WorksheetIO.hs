@@ -139,7 +139,7 @@ printIt = sequence_ (gcdC 129280 232680)
 -- =========================================
 
 -- Try to make the following line the first clause of your gcdA function.
--- You have to rename func to gcdA
+-- You have to rename func to gcdA.
 -- This will print a trace like you are used to in imperative languages.
 
 func :: Integer -> Integer -> Integer
