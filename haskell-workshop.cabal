@@ -11,11 +11,22 @@ Library
   Default-Language:     Haskell2010
   HS-Source-Dirs:       src
   GHC-Options:          -Wall -fwarn-incomplete-uni-patterns -fwarn-tabs
-  Exposed-Modules:      HaskellWorkshop.Beginning
-                        HaskellWorkshop.WorksheetIO
-  Other-Modules:        HaskellWorkshop.Beginning.Internal
+  Exposed-Modules:      HaskellWorkshop.WorksheetIO
+  -- HaskellWorkshop.Beginning
+  -- Other-Modules:        HaskellWorkshop.Beginning.Internal
   Build-Depends:        base >= 4 && < 5
                       , hspec
+
+Test-Suite test-Worksheet01
+  Default-Language:     Haskell2010
+  type:                 exitcode-stdio-1.0
+  build-depends:        base >= 4 && < 5,
+                        hspec
+  ghc-Options:          -Wall -fwarn-incomplete-uni-patterns -fwarn-tabs
+  hs-source-dirs:       src/HaskellWorkshop
+  main-is:              Worksheet01.hs
+
+
 
 Source-Repository head
   Type:                 git
