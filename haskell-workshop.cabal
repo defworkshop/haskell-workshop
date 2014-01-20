@@ -31,3 +31,10 @@ Test-Suite test-Worksheet01
 Source-Repository head
   Type:                 git
 --  Location:
+
+
+Executable hausvomnikolaus
+  Default-Language: Haskell2010
+  Main-Is: src/Solution/HausVomNikolaus.hs
+  GHC-Options: -Wall -fwarn-incomplete-uni-patterns -fwarn-tabs -fwarn-missing-import-lists -main-is Solution.HausVomNikolaus
+  Build-Depends: base
