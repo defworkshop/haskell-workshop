@@ -2,8 +2,6 @@ Name:			haskell-workshop
 Version:                0.0.0
 Author:                 Alex P<alex@clojurewerkz.org>
 Maintainer:             Alex P<alex@clojurewerkz.org>
--- Synopsis:
--- Description:
 Cabal-Version:          >= 1.10
 Build-Type:             Simple
 
