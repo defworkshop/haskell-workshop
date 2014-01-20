@@ -38,3 +38,12 @@ Executable hausvomnikolaus
   Main-Is: src/Solution/HausVomNikolaus.hs
   GHC-Options: -Wall -fwarn-incomplete-uni-patterns -fwarn-tabs -fwarn-missing-import-lists -main-is Solution.HausVomNikolaus
   Build-Depends: base
+
+
+Executable sudoku
+  Default-Language: Haskell2010
+  Main-Is: src/Solution/Sudoku.hs
+  GHC-Options: -Wall -fwarn-incomplete-uni-patterns -fwarn-tabs -fwarn-missing-import-lists
+  Build-Depends: base,
+                 bitset >= 1.4,
+                 vector >= 0.10
