@@ -12,7 +12,9 @@ import Test.Hspec
 -- Write a function that returns the lesser of two Ints.
 --------------------------------------------------------------------------------
 myMin :: Int -> Int -> Int
-myMin = undefined
+myMin a b = if a < b
+            then a
+            else b
 
 myMinSpec :: Spec
 myMinSpec = do
@@ -29,7 +31,9 @@ myMinSpec = do
 -- the sides of a right triangle, such that the last element is the hypothenuse.
 --------------------------------------------------------------------------------
 isRightTriangle :: (Int, Int, Int) -> Bool
-isRightTriangle (x,y,z) = undefined
+isRightTriangle (x,y,z) =
+  (square x) + (square y) == (square z)
+  where square a = a*a
 
 isRightTriangleSpec :: Spec
 isRightTriangleSpec = do
@@ -49,7 +53,12 @@ isRightTriangleSpec = do
 -- any of those triples can form a right triangle
 --------------------------------------------------------------------------------
 anyRightTriangle :: [(Int,Int,Int)] -> Bool
-anyRightTriangle = undefined
+anyRightTriangle [] = False
+anyRightTriangle [(a, b, c)] = isRightTriangle(a,b,c)
+anyRightTriangle ((a, b, c): more) =
+  if isRightTriangle(a,b,c)
+  then True
+  else anyRightTriangle more
 
 anyRightTriangleSpec :: Spec
 anyRightTriangleSpec = do
@@ -73,7 +82,9 @@ anyRightTriangleSpec = do
 -- Return 'Nothing' if there is no last element
 --------------------------------------------------------------------------------
 myLast :: [a] -> Maybe a
-myLast = undefined
+myLast [] = Nothing
+myLast (a:[]) = Just a
+myLast (x:xs) = myLast xs
 
 myLastSpec :: Spec
 myLastSpec = do
@@ -92,7 +103,9 @@ myLastSpec = do
 -- Don't use the `!!` list index operator
 --------------------------------------------------------------------------------
 elementAt :: [a] -> Int -> Maybe a
-elementAt = undefined
+elementAt [] i = Nothing
+elementAt (x:xs) 1 = Just x
+elementAt els n = elementAt (tail els) (n-1)
 
 elementAtSpec :: Spec
 elementAtSpec = do
@@ -108,7 +121,9 @@ elementAtSpec = do
 -- Find the number of elements of a list. Can you write a tail recursive version?
 --------------------------------------------------------------------------------
 myLength :: [a] -> Int
-myLength = undefined
+myLength [] = 0
+myLength [a] = 1
+myLength (x:xs) = 1 + (myLength xs)
 
 myLengthSpec :: Spec
 myLengthSpec = do
@@ -124,7 +139,9 @@ myLengthSpec = do
 -- Reverse a list.
 --------------------------------------------------------------------------------
 myReverse :: [a] -> [a]
-myReverse = undefined
+myReverse els =
+  foldl appendHead [] els
+  where appendHead acc el = el : acc
 
 myReverseSpec :: Spec
 myReverseSpec = do
@@ -140,7 +157,7 @@ myReverseSpec = do
 -- backward; e.g. (x a m a x).
 --------------------------------------------------------------------------------
 isPalindrome :: (Eq a) => [a] -> Bool
-isPalindrome = undefined
+isPalindrome a = a == (myReverse a)
 
 isPalindromeSpec :: Spec
 isPalindromeSpec = do
