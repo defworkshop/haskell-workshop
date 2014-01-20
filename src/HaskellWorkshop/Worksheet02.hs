@@ -13,7 +13,11 @@ module HaskellWorkshop.Worksheet02
 -- Define a bivariate tree. Tip: A tree is much like a list, except that it
 -- has two branches
 --------------------------------------------------------------------------------
-data Tree a = Nil
+data Tree a = Empty |
+              Leaf a |
+              Node (Tree a) a (Tree b)
+              deriving (Eq, Ord, Show)
+
 
 
 --------------------------------------------------------------------------------
