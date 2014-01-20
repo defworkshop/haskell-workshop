@@ -19,8 +19,9 @@ Test-Suite test-Worksheet01
   build-depends:        base >= 4 && < 5,
                         hspec
   ghc-Options:          -Wall -fwarn-incomplete-uni-patterns -fwarn-tabs
-  hs-source-dirs:       src/HaskellWorkshop
-  main-is:              Worksheet01.hs
+  hs-source-dirs:       src, test
+  main-is:              HaskellWorkshop/Worksheet01/Test/Main.hs
+
 
 
 
