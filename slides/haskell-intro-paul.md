@@ -98,7 +98,8 @@ add x y = if y > 0
     data Car = Car String String Int Int
     ~~~
 
-  - *Records* give the fields names.
+  - The fields of product types can also be named, such a definition
+    is referred to as a *record*:
 
     ~~~{.Haskell}
     data Car = Car { carMake :: String,
@@ -107,27 +108,26 @@ add x y = if y > 0
                      carHorsepower :: Int }
     ~~~
 
-    - Name of records fields live in the same namespace as other bindings,
+    - Fieldnames live in the same namespace as other bindings,
       so they must be unique in a module.
 
 
 
 ## Datatypes - Sum Types aka Disjoint Unions
 
-  - *Sum types* can have several representations
+  - *Sum types* can have several representations:
 
     ~~~{.Haskell}
-    data Tx = InitialTx Timestamp Amount
-            | FailedTx  Timestamp Amount String
-            | SuccessfulTx Timestamp Amount String
+    data MaybeInt = MIJust Int
+                  | MINothing
     ~~~
 
   - We can work with sum types by pattern matching their constructors:
 
     ~~~{.Haskell}
-    getFailedTimestamp :: Tx -> Maybe Timestamp
-    getFailedTimestamp (FailedTx ts _ _) = Just ts
-    getFailedTimestamp _                 = Nothing
+    maybeAdd :: MaybeInt -> Int -> MaybeInt
+    maybeAdd (MIJust x) y = MIJust (x+y)
+    maybeAdd MINothing  _ = MINothing
     ~~~
 
 
@@ -187,8 +187,8 @@ add x y = if y > 0
     qsort []     = []
     qsort (x:xs) = lessOrEqual ++ [x] ++ greater
       where
-        lessOrEqual = filter (<= x) xs
-        greater     = filter (> x) xs
+        lessOrEqual = qsort (filter (<= x) xs)
+        greater     = qsort (filter (> x) xs)
     ~~~
 
 
@@ -246,10 +246,41 @@ add x y = if y > 0
                           else go cnt p xs
     ~~~
 
+  - It is usually a good idea to use existing HOFs:
+
+    ~~~{.Haskell}
+    countIf :: (a -> Bool) -> [a] -> Int
+    countIf p xs = length (filter p xs)
+    ~~~
+
+
+## Making functions tail recursive
+
+  - When using recursion there is a danger of blowing the stack:
+
+    ~~~{.Haskell}
+    length :: [a] -> Int
+    length []     = 0
+    length (x:xs) = length xs + 1
+    ~~~
+
+  - Haskell provides *tail call optimization* (TCO), but for this
+    two work functions must be tail recursive.
+
+  - Usual trick: transfer results in an 'accumulator'
+
+    ~~~{.Haskell}
+    length :: [a] -> Int
+    length xs = len 0 xs
+      where
+        len acc []     = acc
+        len acc (x:xs) = len (acc+1) xs
+    ~~~
+
 
 ## Lambdas
 
-  - Higher order functions become even more useful if we can
+  - Higher order functions are even more convenient to use if we can
     create functions in place.
 
   - Lambdas can be created with the `\ ->`{.Haskell} syntax:
@@ -259,6 +290,17 @@ add x y = if y > 0
     countIf p xs = foldl (\cnt x -> if p x
                                     then (cnt+1)
                                     else cnt) 0 xs
+    ~~~
+
+  - Long lambdas can be a bit awkward. Remember that you can also
+    define functions in `let`{.Haskell} and `where`{.Haskell}
+    expressions:
+
+    ~~~{.Haskell}
+    countIf :: (a -> Bool) -> [a] -> Int
+    countIf p xs = foldl counter 0 xs
+      where
+        counter cnt x = if p x then (cnt+1) else cnt
     ~~~
 
 
@@ -293,21 +335,30 @@ add x y = if y > 0
     length acc (x:xs) = length (1+acc) xs
     ~~~
 
+    This uses a huge amount of memory, blows the stack if in a
+    compiled program:
+
     ~~~{.Haskell}
     ghci> length [1..10*1000*1000]
-    -- Takes forever, needs huge amounts of memory
     ~~~
 
   - The problem is that `(+)` is lazy, so we build up a huge *thunk*
     `(1+(1+(1+(1+(1+ ...)))))`
 
+
+## When Laziness bites
+
   - We can avoid this by forcing the evaluation of `acc` with `seq`:
 
     ~~~{.Haskell}
-    length :: Int -> [a] -> Int
-    length acc []     = acc
-    length acc (x:xs) = acc `seq` length (1+acc) xs
+    len :: Int -> [a] -> Int
+    len acc []     = acc
+    len acc (x:xs) = let z = acc+1
+                     in z `seq` len z xs
     ~~~
+
+  - Instead of rolling our own, we can also use existing combinators
+    such as `foldl'` from `Data.List`.
 
 
 ## Currying and Partial Function Application
@@ -318,7 +369,7 @@ add x y = if y > 0
   - Currying is the default modus operandi in Haskell:
 
     ~~~{.Haskell}
-    add :: Int -> Int -> Bool
+    add :: Int -> Int -> Int
     add x y = x + y
     ~~~
 
@@ -329,7 +380,10 @@ add x y = if y > 0
     application is very natural in Haskell:
 
     ~~~{.Haskell}
-    map (add 3) [1..5] -- [4, 5, 6, 7, 8]
+    add3 :: Int -> Int
+    add3 = add 3
+
+    map add3 [1..5] -- [4, 5, 6, 7, 8]
     ~~~
 
 
@@ -338,10 +392,10 @@ add x y = if y > 0
   - Haskell may seem like it is full of operators, but operators are just functions:
 
     ~~~{.Haskell}
-    (!?) -> [a] -> Int -> Maybe a
+    (!?) :: [a] -> Int -> Maybe a
     (!?) []     _ = Nothing
     (!?) (x:xs) 0 = Just x
-    (!?) (x:xs) n = (!?) xs (n-1)
+    (x:xs) !? n   = xs !? (n-1)
     ~~~
 
   - Operators are written inline by default, but don't have to be:
@@ -361,32 +415,15 @@ add x y = if y > 0
     ~~~
 
 
-## Pointfree vs. Pointful Style
+## `($)` and `(.)`
 
-  - So far we have written our Haskell in what is called *pointful* style:
-
-    ~~~{.Haskell}
-    countIf :: (a -> Bool) -> [a] -> Int
-    countIf p xs = foldl (\cnt x -> if p x
-                                    then (cnt+1)
-                                    else cnt) 0 xs
-    ~~~
-
-  - An alternative is *point-free* style:
+  - The `($)` operator is *function application*, but has very low
+    precedence and binds to the right.  This can be convenient to
+    avoid writing to many parenthesis:
 
     ~~~{.Haskell}
-    countIf :: (a -> Bool) -> [a] -> Int
-    countIf p = foldl (\cnt x -> if p x
-                                 then (cnt+1)
-                                 else cnt) 0
+    concat $ map show $ take 10 [1..]
     ~~~
-
-  - Pointfree style focuses on how functions can be defined in terms
-    of other functions.
-
-
-
-## `(.)` and `($)`
 
   - Functions can be composed with the function composition operator `(.)`:
 
@@ -395,16 +432,35 @@ add x y = if y > 0
     (.) f g x = f (g x)
     ~~~
 
-  - The `($)` operator is *function application*, but has very low
-    precedence and binds to the right.  This can be convenient to
-    avoid writing to many parenthesis:
+
+## Pointfree vs. Pointful Style
+
+  - So far we have written our Haskell in what is called *pointful* style:
 
     ~~~{.Haskell}
-    concat . map show . take 10 $ [1..]
+    countIf :: (a -> Bool) -> [a] -> Int
+    countIf p xs = length (filter p xs)
     ~~~
 
+  - An alternative is *pointfree* style:
 
-## Hack, Hack, Hurra!
+    ~~~{.Haskell}
+    countIf :: (a -> Bool) -> [a] -> Int
+    countIf p = length . filter p
+    ~~~
+
+  - Pointfree style focuses on how functions can be defined in terms
+    of other functions.
+
+  - Ironically 'pointfree' style has more `(.)`{.Haskell}!
+
+
+# Introduction to IO in Haskell (Heinrich)
+
+
+# Hackathon
+
+## Happy hacking
 
 Need a project?
 
