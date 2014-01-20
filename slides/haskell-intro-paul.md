@@ -14,9 +14,21 @@
     `$ cabal install --dependencies-only`
 
 
+  - Build and test:
+
+    `$ cabal build && cabal test`
+
   - use `GHCi`:
 
     `$ cabal repl`
+
+  - get help:
+
+    `ghci> :h`
+
+  - see a modules functions:
+
+    `ghci> :browse HaskellWorkshop.Worksheet01`
 
 
 # Basic Functions
