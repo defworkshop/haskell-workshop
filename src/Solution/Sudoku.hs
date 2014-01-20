@@ -90,4 +90,5 @@ solve g = if null esquares then [g] else concatMap solve tries
     esquares = (emptySquares g)
     tries = filter gameValid [set g r c e | e <- [I1 .. I9], (r,c) <- take 1 esquares]
 
+main :: IO ()
 main = putStrLn . L.intercalate "\n\n" . map showGame $ solve game
