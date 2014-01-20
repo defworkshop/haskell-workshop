@@ -143,25 +143,13 @@ isPalindromeSpec :: Spec
 isPalindromeSpec = do
   describe "isPalindrome" $ do
     it "accepts the empty list" $ do
-      isPalindrome "" `shouldBe` True
+      isPalindrome (""::String) `shouldBe` True
 
     it "accepts some simple palindromes" $ do
       isPalindrome [1,2,3,2,1::Int] `shouldBe` True
-      isPalindrome "ANNA" `shouldBe` True
-      isPalindrome "oTTo" `shouldBe` True
+      isPalindrome ("ANNA"::String) `shouldBe` True
+      isPalindrome ("oTTo"::String) `shouldBe` True
 
     it "rejects lists that are not palindromes" $ do
-      isPalindrome "abc" `shouldBe` False
-      isPalindrome "abbac" `shouldBe` False
-
-
-main :: IO ()
-main = hspec $ do
-  myMinSpec
-  isRightTriangleSpec
-  anyRightTriangleSpec
-  myLastSpec
-  elementAtSpec
-  myLengthSpec
-  myReverseSpec
-  isPalindromeSpec
+      isPalindrome ("abc"::String) `shouldBe` False
+      isPalindrome ("abbac"::String) `shouldBe` False
