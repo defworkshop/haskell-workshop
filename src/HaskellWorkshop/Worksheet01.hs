@@ -1,7 +1,4 @@
-module Main
-       (
-         main
-       ) where
+module HaskellWorkshop.Worksheet01 where
 
 import Test.Hspec
 
