@@ -19,9 +19,8 @@ import Debug.Trace (trace)
 -- test1a: do-notation
 test1a :: IO ()
 test1a = do
-  putStr "Type something: "
-  line <- getLine
-  putStrLn line
+  let bigLen = length [1..1000000000000]
+  return ()
 
 
 -- testb: desugared pointful version (explicit arguments)
@@ -144,4 +143,3 @@ printIt = sequence_ (gcdC 129280 232680)
 
 func :: Integer -> Integer -> Integer
 func a b | trace (show a ++ "\t" ++ show b) False = undefined
-
