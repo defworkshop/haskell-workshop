@@ -82,7 +82,10 @@ readIntB = do
 -- Hint: Your gcd function should have this type:
 
 gcdA :: Integer -> Integer -> Integer
-gcdA = undefined
+gcdA x 0 = x
+gcdA 0 x = x
+gcdA x y = let (low,hgh) = if x < y then (x,y) else (y,x)
+           in gcdA low (hgh `rem` low)
 
 -- =========================================
 -- Lazy data structures
@@ -92,7 +95,11 @@ gcdA = undefined
 -- Rewrite your gcd function to have this signature:
 
 gcdB :: Integer -> Integer -> [(Integer, Integer)]
-gcdB = undefined
+gcdB x 0 = [(x,0)]
+gcdB 0 x = [(x,0)]
+gcdB x y = (x,y) : let (low,hgh) = if x < y then (x,y) else (y,x)
+                   in gcdB low (hgh `rem` low)
+
 
 -- You should prepend the two argments to each recursiv call.
 -- Thus, you will get a list of intermediate results, the final
@@ -108,7 +115,10 @@ gcdB = undefined
 -- Rewrite your gcd function to have this signature:
 
 gcdC :: Integer -> Integer -> [IO ()]
-gcdC = undefined
+gcdC x 0 = [print (x,0)]
+gcdC 0 x = [print (x,0)]
+gcdC x y = print (x,y) : let (low,hgh) = if x < y then (x,y) else (y,x)
+                         in gcdC low (hgh `rem` low)
 
 -- Apply print on each element of the list.
 -- Try use this to print your trace:
@@ -120,6 +130,9 @@ printIt = sequence_ (gcdC 129280 232680)
 -- Reverse this trace. Print only every second item of the trace.
 -- How would you do this in imperative language
 -- without modifying the algorithm itself?
+printRev :: IO ()
+printRev = sequence_ $ reverse $ gcdC 129280 232680
+
 
 -- Tasks:
 -- Try "gcdB" and "sequence_ . map print" instead of "gcdC" and "sequence_".
@@ -142,6 +155,9 @@ printIt = sequence_ (gcdC 129280 232680)
 -- You have to rename func to gcdA.
 -- This will print a trace like you are used to in imperative languages.
 
-func :: Integer -> Integer -> Integer
-func a b | trace (show a ++ "\t" ++ show b) False = undefined
-
+gcdA' :: Integer -> Integer -> Integer
+gcdA' a b | trace (show a ++ "\t" ++ show b) False = undefined
+gcdA' a 0                                          = a
+gcdA' 0 b                                          = b
+gcdA' a b                                          = let (low,hgh) = if a < b then (a,b) else (b,a)
+                                                     in gcdA' low (hgh `rem` low)
